@@ -71,3 +71,43 @@ void suspend_wakeup_init_kb(void) {
     suspend_wakeup_init_user();
 }
 #endif // RGB_MATRIX_ENABLE
+
+#define LED_CAPS 3
+#define V_RED 0
+#define min(a, b) (((a) < (b)) ? (a) : (b))
+
+void set_caps_led_indicator(void) {
+    HSV current_hsv = rgb_matrix_get_hsv();
+    HSV caps_hsv = {V_RED, current_hsv.s, min(current_hsv.v + 50, 255)};
+    RGB caps_rgb = hsv_to_rgb(caps_hsv);
+    rgb_matrix_set_color(LED_CAPS, caps_rgb.r, caps_rgb.g, caps_rgb.b);
+}
+
+void set_fn_led_overlay(uint8_t led_min, uint8_t led_max) {
+    uint8_t layer = get_highest_layer(layer_state);
+
+    HSV current_hsv = rgb_matrix_get_hsv();
+    HSV fn_hsv = {current_hsv.h, min(current_hsv.s + 25, 255), min(current_hsv.v + 50, 255)};
+    RGB fn_rgb = hsv_to_rgb(fn_hsv);
+
+    for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
+        for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
+            uint8_t index = g_led_config.matrix_co[row][col];
+
+            if (index >= led_min && index <= led_max && index != NO_LED &&
+            keymap_key_to_keycode(layer, (keypos_t){col,row}) > KC_TRNS) {
+                rgb_matrix_set_color(index, fn_rgb.r, fn_rgb.g, fn_rgb.b);
+            }
+        }
+    }
+}
+
+void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+    if (host_keyboard_led_state().caps_lock) {
+        set_caps_led_indicator();
+    }
+
+    if (get_highest_layer(layer_state) > BASE) {
+        set_fn_led_overlay(led_min, led_max);
+    }
+}
