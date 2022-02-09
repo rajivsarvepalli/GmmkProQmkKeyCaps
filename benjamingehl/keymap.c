@@ -19,6 +19,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define BASE 0
 #define FN 1
 
+enum custom_keycodes {
+    OS_CHG = SAFE_RANGE,
+    PRT_EM
+};
+
+bool is_win_mode = false;
+
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -41,7 +48,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [FN] = LAYOUT(
         _______, KC_F1,   KC_F2,   _______, _______, _______, _______, KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  _______,          _______,
         NK_TOGG, RGB_TOG, RGB_VAI, RGB_VAD, RGB_HUI, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
-        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, RESET,            _______,
+        _______, _______, _______, PRT_EM,  _______, _______, _______, _______, _______, OS_CHG,  _______, _______, _______, RESET,            _______,
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,          _______,
         _______,          _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______, RGB_MOD, _______,
         _______, _______, _______,                            _______,                            _______, _______, _______, RGB_SPD, RGB_RMOD, RGB_SPI
@@ -56,13 +63,19 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 
     if (clockwise) {
       if (is_fn_layer) {
-        tap_code16(LGUI(KC_Z));
+          if (is_win_mode)
+            tap_code16(LCTL(KC_Y));
+          else 
+            tap_code16(LGUI(KC_Z));
       } else {
         tap_code(KC_VOLU);
       }
     } else {
       if (is_fn_layer) {
-        tap_code16(LGUI(S(KC_Z)));
+          if (is_win_mode)
+            tap_code16(LCTL(KC_Z));
+          else 
+            tap_code16(LGUI(S(KC_Z)));
       } else {
         tap_code(KC_VOLD);
       }
@@ -71,6 +84,23 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
     return true;
 }
 #endif // ENCODER_ENABLE
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case OS_CHG:
+            if (record->event.pressed) {
+                is_win_mode = !is_win_mode;
+            }
+            break;
+        case PRT_EM:
+            if (record->event.pressed) {
+                SEND_STRING("gehlbenji@gmail.com");
+            }
+            break;
+    }
+
+    return true;
+}
 
 #ifdef RGB_MATRIX_ENABLE
 void suspend_power_down_kb(void) {
