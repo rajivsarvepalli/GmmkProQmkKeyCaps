@@ -70,7 +70,7 @@ void encoder_clockwise(void) {
                 tap_code16(LCTL(KC_Y));
             }
             else {
-                tap_code16(LGUI(KC_Z));
+                tap_code16(LGUI(S(KC_Z)));
             }
             return;
     }
@@ -88,7 +88,7 @@ void encoder_counterclockwise(void) {
                 tap_code16(LCTL(KC_Z));
             }
             else {
-                tap_code16(LGUI(S(KC_Z)));
+                tap_code16(LGUI(KC_Z));
             }
             return;
     }
