@@ -51,11 +51,23 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 #ifdef ENCODER_ENABLE
 bool encoder_update_user(uint8_t index, bool clockwise) {
+
+    bool is_fn_layer = get_highest_layer(layer_state) == FN;
+
     if (clockwise) {
-      tap_code(KC_VOLU);
+      if (is_fn_layer) {
+        tap_code16(LGUI(KC_Z));
+      } else {
+        tap_code(KC_VOLU);
+      }
     } else {
-      tap_code(KC_VOLD);
+      if (is_fn_layer) {
+        tap_code16(LGUI(S(KC_Z)));
+      } else {
+        tap_code(KC_VOLD);
+      }
     }
+
     return true;
 }
 #endif // ENCODER_ENABLE
