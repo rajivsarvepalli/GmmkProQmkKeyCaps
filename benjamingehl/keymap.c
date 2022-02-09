@@ -134,6 +134,7 @@ void suspend_wakeup_init_kb(void) {
 }
 
 #define LED_CAPS 3
+#define LED_O 52
 #define V_RED 0
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 
@@ -160,6 +161,12 @@ void set_fn_led_overlay(uint8_t led_min, uint8_t led_max) {
                 rgb_matrix_set_color(index, fn_rgb.r, fn_rgb.g, fn_rgb.b);
             }
         }
+    }
+
+    if (is_win_mode) {
+        rgb_matrix_set_color(LED_O, 200, 0, 0);
+    } else {
+        rgb_matrix_set_color(LED_O, 0, 0, 200);
     }
 }
 
