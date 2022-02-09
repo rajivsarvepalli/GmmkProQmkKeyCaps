@@ -70,7 +70,6 @@ void suspend_wakeup_init_kb(void) {
     rgb_matrix_set_suspend_state(false);
     suspend_wakeup_init_user();
 }
-#endif // RGB_MATRIX_ENABLE
 
 #define LED_CAPS 3
 #define V_RED 0
@@ -111,3 +110,4 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         set_fn_led_overlay(led_min, led_max);
     }
 }
+#endif // RGB_MATRIX_ENABLE
