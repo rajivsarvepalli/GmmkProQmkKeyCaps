@@ -15,6 +15,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include QMK_KEYBOARD_H
+#include "env.h"
 
 #define BASE 0
 #define FN 1
@@ -124,7 +125,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         case PRT_EM: {
             if (record->event.pressed) {
-                SEND_STRING("gehlbenji@gmail.com");
+                SEND_STRING(MY_EMAIL);
             }
             break;
         }
