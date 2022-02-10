@@ -19,6 +19,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define BASE 0
 #define FN 1
 
+#define WIN_REDO LCTL(KC_Y)
+#define MAC_REDO LGUI(S(KC_Z))
+#define WIN_UNDO LCTL(KC_Z)
+#define MAC_UNDO LGUI(KC_Z)
+#define WIN_PSCR LGUI(S(KC_S))
+#define MAC_PSCR LGUI(S(KC_4))
+
+#define LED_CAPS 3
+#define LED_O 52
+#define V_RED 0
+#define min(a, b) (((a) < (b)) ? (a) : (b))
+
 enum custom_keycodes {
     OS_CHG = SAFE_RANGE,
     PRT_EM,
@@ -63,17 +75,15 @@ void encoder_clockwise(void) {
     bool current_layer = get_highest_layer(layer_state);
     
     switch(current_layer) {
-        case BASE:
+        case BASE: {
             tap_code(KC_VOLU);
             return;
-        case FN:
-            if (is_win_mode) {
-                tap_code16(LCTL(KC_Y));
-            }
-            else {
-                tap_code16(LGUI(S(KC_Z)));
-            }
+        }
+        case FN: {
+            int keycode = is_win_mode ? WIN_REDO : MAC_REDO;
+            tap_code16(keycode);
             return;
+        }
     }
 }
 
@@ -81,17 +91,15 @@ void encoder_counterclockwise(void) {
     bool current_layer = get_highest_layer(layer_state);
 
     switch(current_layer) {
-        case BASE:
+        case BASE: {
             tap_code(KC_VOLD);
             return;
-        case FN:
-            if (is_win_mode) {
-                tap_code16(LCTL(KC_Z));
-            }
-            else {
-                tap_code16(LGUI(KC_Z));
-            }
+        }
+        case FN: {
+            int keycode = is_win_mode ? WIN_UNDO : MAC_UNDO;
+            tap_code16(keycode);
             return;
+        }
     }
 }
 
@@ -108,23 +116,23 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
-        case OS_CHG:
+        case OS_CHG: {
             if (record->event.pressed) {
                 is_win_mode = !is_win_mode;
             }
             break;
-        case PRT_EM:
+        }
+        case PRT_EM: {
             if (record->event.pressed) {
                 SEND_STRING("gehlbenji@gmail.com");
             }
             break;
-        case PSCR:
-            if (is_win_mode) {
-                tap_code16(LGUI(S(KC_S)));
-            } else {
-                tap_code16(LGUI(S(KC_4)));
-            }
+        }
+        case PSCR: {
+            int keycode = is_win_mode ? WIN_PSCR : MAC_PSCR;
+            tap_code16(keycode);
             break;
+        }
     }
 
     return true;
@@ -140,11 +148,6 @@ void suspend_wakeup_init_kb(void) {
     rgb_matrix_set_suspend_state(false);
     suspend_wakeup_init_user();
 }
-
-#define LED_CAPS 3
-#define LED_O 52
-#define V_RED 0
-#define min(a, b) (((a) < (b)) ? (a) : (b))
 
 void set_caps_led_indicator(void) {
     HSV current_hsv = rgb_matrix_get_hsv();
