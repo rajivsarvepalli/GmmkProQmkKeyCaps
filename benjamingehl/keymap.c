@@ -26,6 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MAC_UNDO LGUI(KC_Z)
 #define WIN_PSCR LGUI(S(KC_S))
 #define MAC_PSCR LGUI(S(KC_4))
+#define WIN_SEL_WRD C(S(KC_LEFT))
+#define MAC_SEL_WRD A(S(KC_LEFT))
 
 #define LED_CAPS 3
 #define LED_O 52
@@ -35,7 +37,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 enum custom_keycodes {
     OS_CHG = SAFE_RANGE,
     PRT_EM,
-    PSCR
+    PSCR,
+    DEL_WRD
 };
 
 bool is_win_mode = false;
@@ -60,9 +63,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [FN] = LAYOUT(
-        _______, KC_F1,   KC_F2,   _______, _______, _______, _______, KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  _______,          _______,
-        NK_TOGG, RGB_TOG, RGB_VAI, RGB_VAD, RGB_HUI, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
-        _______, _______, _______, PRT_EM,  _______, _______, _______, _______, _______, OS_CHG,  _______, _______, _______, RESET,            _______,
+        RESET,   KC_F1,   KC_F2,   _______, _______, _______, _______, KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  _______,          _______,
+        NK_TOGG, RGB_TOG, RGB_VAI, RGB_VAD, RGB_HUI, _______, _______, _______, _______, _______, _______, _______, _______, DEL_WRD,          _______,
+        _______, _______, _______, PRT_EM,  _______, _______, _______, _______, _______, OS_CHG,  _______, _______, _______, _______,          _______,
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,          _______,
         _______,          _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______, RGB_MOD, _______,
         _______, _______, _______,                            _______,                            _______, _______, _______, RGB_SPD, RGB_RMOD, RGB_SPI
@@ -116,23 +119,30 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 #endif // ENCODER_ENABLE
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+
+    if (!record->event.pressed) {
+        return true;
+    }
+
     switch (keycode) {
         case OS_CHG: {
-            if (record->event.pressed) {
-                is_win_mode = !is_win_mode;
-            }
+            is_win_mode = !is_win_mode;
             break;
         }
         case PRT_EM: {
-            if (record->event.pressed) {
-                SEND_STRING(MY_EMAIL);
-            }
+            SEND_STRING(MY_EMAIL);
             break;
         }
         case PSCR: {
             int keycode = is_win_mode ? WIN_PSCR : MAC_PSCR;
             tap_code16(keycode);
             break;
+        }
+        case DEL_WRD: {
+            int keycode = is_win_mode ? WIN_SEL_WRD : MAC_SEL_WRD;
+            tap_code16(keycode);
+            tap_code(KC_BSPC);
+            return false;
         }
     }
 
