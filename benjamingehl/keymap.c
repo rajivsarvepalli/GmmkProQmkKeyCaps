@@ -28,6 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MAC_PSCR LGUI(S(KC_4))
 #define WIN_SEL_WRD C(S(KC_LEFT))
 #define MAC_SEL_WRD A(S(KC_LEFT))
+#define WIN_MUL_PST LGUI(KC_V)
+#define MAC_MUL_PST LGUI(S(KC_V))
 
 #define LED_CAPS 3
 #define LED_O 52
@@ -38,7 +40,8 @@ enum custom_keycodes {
     OS_CHG = SAFE_RANGE,
     PRT_EM,
     PSCR,
-    DEL_WRD
+    DEL_WRD,
+    MUL_PST
 };
 
 bool is_win_mode = false;
@@ -57,7 +60,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_ESC,  KC_BRID, KC_BRIU, KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_MPRV, KC_MNXT, KC_MPLY, KC_MUTE, KC_VOLD, KC_VOLU, PSCR,             KC_MUTE,
         KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,          KC_PGUP,
         KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,          KC_PGDN,
-        KC_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,           KC_HOME,
+        MUL_PST, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,           KC_HOME,
         KC_LSPO,          KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,          KC_RSPC, KC_UP,   KC_END,
         KC_LCTL, KC_LALT, KC_LGUI,                            KC_SPC,                             KC_RALT, MO(FN),  KC_RCTL, KC_LEFT, KC_DOWN, KC_RGHT
     ),
@@ -66,8 +69,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         RESET,   KC_F1,   KC_F2,   _______, _______, _______, _______, KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  _______,          _______,
         NK_TOGG, RGB_TOG, RGB_VAI, RGB_VAD, RGB_HUI, _______, _______, _______, _______, _______, _______, _______, _______, DEL_WRD,          _______,
         _______, _______, _______, PRT_EM,  _______, _______, _______, _______, _______, OS_CHG,  _______, _______, _______, _______,          _______,
-        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,          _______,
-        _______,          _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______, RGB_MOD, _______,
+        KC_CAPS, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,          _______,
+        KC_LSFT,          _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          KC_RSFT, RGB_MOD, _______,
         _______, _______, _______,                            _______,                            _______, _______, _______, RGB_SPD, RGB_RMOD, RGB_SPI
     ),
 };
@@ -144,6 +147,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             tap_code(KC_BSPC);
             return false;
         }
+        case MUL_PST: {
+            int keycode = is_win_mode ? WIN_MUL_PST : MAC_MUL_PST;
+            tap_code16(keycode);
+            break;
+        }
     }
 
     return true;
@@ -201,4 +209,5 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         set_fn_led_overlay(led_min, led_max);
     }
 }
+
 #endif // RGB_MATRIX_ENABLE
