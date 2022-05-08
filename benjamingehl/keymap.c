@@ -158,6 +158,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 #ifdef RGB_MATRIX_ENABLE
+void keyboard_post_init_user(void) {
+    rgb_matrix_set_color_all(255, 137, 0);
+}
+
 void suspend_power_down_kb(void) {
     rgb_matrix_set_suspend_state(true);
     suspend_power_down_user();
